@@ -8,7 +8,7 @@ if defined _OLD_CODEPAGE (
     "%SystemRoot%\System32\chcp.com" 65001 > nul
 )
 
-set VIRTUAL_ENV=C:\Users\informatica\Documents\GitHub\proyectodocker\funciones\jerrys\project
+set VIRTUAL_ENV=C:\Users\hokag\OneDrive\Documentos\GitHub\proyectodocker\funciones\jerrys\project
 
 if not defined PROMPT set PROMPT=$P$G
 
