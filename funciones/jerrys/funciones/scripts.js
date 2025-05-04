@@ -1,5 +1,5 @@
 import { CreateMLCEngine } from "https://esm.run/@mlc-ai/web-llm";
-const Select_model = "Llama-3.2-3B-Instruct-q4f32_1-MLC"; 
+const Select_model = "Llama-3.1-8B-Instruct-q4f32_1-MLC"; 
 const $ = el => document.querySelector(el);
 const $form = $('form');
 const $input = $('input');
