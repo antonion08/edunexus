@@ -1,0 +1,97 @@
+body{
+    font-family:system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif ;
+    background: #10df66;
+    display: grid;
+    place-content: center;
+    height: 100vh;
+    height: 100dvh;
+}
+
+main{
+width: 400px;
+max-width: 100%;
+height: 70vh;
+background: #f7f2f29c;
+border-radius: 20px;
+box-shadow: 0 0  10px rgb(0, 0, 0.1);
+padding: 20px;
+margin-bottom: 16px;
+overflow: auto;
+scroll-behavior: smooth;
+}
+
+ul{
+    display: flex;
+    flex-direction: column;
+    list-style: none;
+    padding: 0;
+}
+
+.mensaje-bot{
+    display: flex;
+    flex-direction: column;
+    gap: 4;
+    margin: 4px;
+    padding: 4px;
+    align-items: flex-start;
+    align-self: auto;
+    >span:first-child{
+        padding: 4px 8px;
+        background-color: rgba(0, 0, 255, 0.219);
+        border-radius: 9999999px;
+        margin-bottom: 1%;
+    }
+    p{
+        padding: 10px 8px;
+        border-radius: 10%;
+        background-color: #386de060;
+    }
+}
+.mensaje-user{
+    display: flex;
+    flex-direction: column;
+    gap: 4;
+    margin: 4px;
+    padding: 4px;
+
+    align-items: flex-end;
+    align-self: flex-end;
+    >span:first-child{
+        padding: 4px 8px;
+        background-color: #10df6646;
+        border-radius: 9999999px;
+    }
+   p{
+        padding: 10px 8px;
+        border-radius: 10%;
+        background-color: #29c2dd69;
+
+    }
+}
+
+form{
+    input{
+        border-radius: 14px;
+        padding: 8px;
+    }
+    button{
+        border-radius: 12px;
+        padding: 8px;
+        background-color: #3207f1e8;
+        transition: background .3s ease;
+        pointer-events: none;
+        &:hover{
+            background-color: #ff020281;
+        }
+    }
+}
+small{
+    font-size: 12px;
+    color: #555;
+    position: fixed;
+    bottom: 10px;
+    left: 0;
+    right: 0;
+    margin: auto;
+    width: 400px;
+}   
