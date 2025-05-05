@@ -1,0 +1,51 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: 0 0% 3.9%;
+  --foreground: 0 0% 98%;
+  --card: 0 0% 3.9%;
+  --card-foreground: 0 0% 98%;
+  --popover: 0 0% 3.9%;
+  --popover-foreground: 0 0% 98%;
+  --primary: 345 70% 45%;
+  --primary-foreground: 0 0% 98%;
+  --secondary: 207 70% 55%;
+  --secondary-foreground: 0 0% 98%;
+  --muted: 0 0% 14.9%;
+  --muted-foreground: 0 0% 63.9%;
+  --accent: 0 0% 14.9%;
+  --accent-foreground: 0 0% 98%;
+  --destructive: 0 62.8% 30.6%;
+  --destructive-foreground: 0 0% 98%;
+  --border: 0 0% 14.9%;
+  --input: 0 0% 14.9%;
+  --ring: 345 70% 45%;
+}
+
+* {
+  @apply border-border;
+}
+
+body {
+  @apply bg-background text-foreground;
+  background: transparent;
+  overflow-x: hidden;
+}
+
+canvas {
+  touch-action: none;
+}
+
+.glass-effect {
+  @apply bg-black/30 backdrop-blur-md border border-white/10;
+}
+
+.shadow-soft-xl {
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+}
+
+.shadow-soft-sm {
+  box-shadow: 0 4px 16px 0 rgba(0, 0, 0, 0.2);
+}
