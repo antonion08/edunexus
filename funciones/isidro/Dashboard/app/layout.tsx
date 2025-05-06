@@ -21,7 +21,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="es" suppressHydrationWarning className="dark">
-      <body className={inter.className + " bg-black/90"}>
+      <body className={inter.className + " bg-black/90 backdrop-blur-md"}>
         <SidebarProvider>
           <div className="fixed inset-0 w-full h-full overflow-hidden z-0">
             <GalaxyBackground />
