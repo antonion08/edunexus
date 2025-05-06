@@ -1,3 +1,10 @@
+/**
+ * ChatBubble Component
+ * 
+ * Un componente de chat flotante que proporciona una interfaz de chat interactiva.
+ * Utiliza Framer Motion para animaciones suaves y un diseño moderno con efectos de cristal (glassmorphism).
+ */
+
 "use client";
 
 import { useState } from "react";
@@ -7,14 +14,22 @@ import { Input } from "@/components/ui/input";
 import { MessageCircle, Send, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
+/**
+ * ChatBubble Component
+ * 
+ * @returns {JSX.Element} Un componente de chat flotante con animaciones
+ */
 export function ChatBubble() {
+  // Estado para controlar la visibilidad del chat
   const [isOpen, setIsOpen] = useState(false);
 
   return (
     <div className="fixed bottom-4 right-4 z-50">
+      {/* AnimatePresence maneja las animaciones de entrada/salida */}
       <AnimatePresence>
         {isOpen && (
           <motion.div
+            // Animaciones para la apertura del chat
             initial={{ opacity: 0, scale: 0.8, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.8, y: 20 }}
@@ -27,9 +42,11 @@ export function ChatBubble() {
             className="fixed bottom-20 right-4 w-96 bg-black/30 backdrop-blur-md border border-white/10 rounded-2xl shadow-soft-xl z-50 overflow-hidden"
           >
             <Card className="border-0 bg-transparent">
+              {/* Encabezado del chat con gradiente */}
               <CardHeader className="bg-gradient-to-r from-primary to-primary/80 p-4 rounded-t-2xl">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
+                    {/* Icono del chat con animación */}
                     <motion.div 
                       initial={{ scale: 0 }}
                       animate={{ scale: 1 }}
@@ -38,6 +55,7 @@ export function ChatBubble() {
                     >
                       <MessageCircle className="h-5 w-5 text-white" />
                     </motion.div>
+                    {/* Título del chat con animación */}
                     <motion.div
                       initial={{ opacity: 0, x: -20 }}
                       animate={{ opacity: 1, x: 0 }}
@@ -46,6 +64,7 @@ export function ChatBubble() {
                       <CardTitle className="text-lg font-semibold text-white">Asistente Virtual</CardTitle>
                     </motion.div>
                   </div>
+                  {/* Botón de cierre con animación */}
                   <motion.div
                     initial={{ opacity: 0, scale: 0.5 }}
                     animate={{ opacity: 1, scale: 1 }}
@@ -63,6 +82,7 @@ export function ChatBubble() {
                 </div>
               </CardHeader>
               <CardContent className="p-4">
+                {/* Contenido del chat con mensaje inicial */}
                 <motion.div 
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -70,6 +90,7 @@ export function ChatBubble() {
                   className="space-y-4"
                 >
                   <div className="flex items-start gap-2">
+                    {/* Mensaje de bienvenida con animación */}
                     <motion.div 
                       initial={{ opacity: 0, x: -20 }}
                       animate={{ opacity: 1, x: 0 }}
@@ -80,6 +101,7 @@ export function ChatBubble() {
                     </motion.div>
                   </div>
                 </motion.div>
+                {/* Área de entrada de mensajes */}
                 <motion.div 
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -103,6 +125,7 @@ export function ChatBubble() {
         )}
       </AnimatePresence>
 
+      {/* Botón flotante para abrir/cerrar el chat */}
       <motion.div
         whileHover={{ scale: 1.1 }}
         whileTap={{ scale: 0.9 }}
