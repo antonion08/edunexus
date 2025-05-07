@@ -71,17 +71,24 @@ export function Sidebar() {
 
       <aside
         className={cn(
-          "fixed md:relative z-50 h-screen transition-all duration-300",
-          "bg-black/30 backdrop-blur-md",
+          "w-56 flex flex-col justify-between h-screen transition-all duration-300 bg-gradient-to-b from-black/80 via-black/60 to-transparent backdrop-blur-md",
           isOpen ? "w-56" : "w-16",
           isMobileOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"
         )}
+        style={{
+          position: "relative",
+          top: 0,
+          left: 0,
+          height: "100vh",
+          zIndex: 50,
+          width: isOpen ? "14rem" : "4rem"
+        }}
       >
         <div className="flex h-14 items-center justify-between px-3 border-b border-white/10">
           {isOpen ? (
             <Link href="/" className="flex items-center gap-2">
               <BookOpen className="h-7 w-7 text-primary" />
-              <span className="text-base font-semibold text-white">EDUNEXUS</span>
+              <span className="text-base font-semibold text-white hidden sm:inline">EDUNEXUS</span>
             </Link>
           ) : (
             <div className="flex w-full justify-center">
@@ -103,8 +110,9 @@ export function Sidebar() {
           </Button>
         </div>
 
-        <nav className="flex-1 py-4" aria-label="Navegación principal">
-          <ul className="space-y-1 px-2">
+        {/* Menú principal */}
+        <nav className="py-6" aria-label="Navegación principal">
+          <ul className="flex flex-col gap-4 px-2">
             {menuItems.map((item) => {
               const isActive = pathname === item.href;
               return (
@@ -112,33 +120,36 @@ export function Sidebar() {
                   <Link
                     href={item.href}
                     className={cn(
-                      "flex items-center gap-2 px-2 py-1.5 rounded-lg transition-all duration-200 font-medium focus:outline-none focus:ring-2 focus:ring-primary/60",
+                      "flex items-center gap-4 px-4 py-3 rounded-xl transition-all duration-200 font-medium focus:outline-none focus:ring-2 focus:ring-primary/60",
                       isActive
                         ? "bg-primary/30 text-primary shadow-md"
                         : "text-white/80 hover:bg-white/10 hover:text-white",
-                      !isOpen && "justify-center"
+                      !isOpen && "justify-center px-0"
                     )}
                     aria-current={isActive ? "page" : undefined}
                     aria-label={!isOpen ? item.title : undefined}
                     tabIndex={isMobileOpen ? -1 : 0}
                     onClick={() => setIsMobileOpen(false)}
                   >
-                    <item.icon className="h-4 w-4" />
-                    {isOpen && <span className="whitespace-nowrap text-sm">{item.title}</span>}
+                    <item.icon className="h-7 w-7 flex-shrink-0" />
+                    {isOpen && <span className="whitespace-nowrap text-base hidden sm:inline">{item.title}</span>}
                   </Link>
                 </li>
               );
             })}
           </ul>
         </nav>
-
-        <div className={cn("border-t border-white/10 flex items-center gap-2 px-2 py-3 transition-all duration-300", !isOpen && "justify-center")}> 
-          <div className="h-7 w-7 rounded-full bg-primary/30 flex items-center justify-center shadow-md">
-            <span className="text-primary font-semibold text-sm">U</span>
+        {/* Usuario fijo abajo */}
+        <div className={cn(
+          "border-t border-white/10 flex items-center gap-3 px-4 py-4 transition-all duration-300", 
+          !isOpen && "justify-center px-0"
+        )} style={{ marginTop: "auto" }}>
+          <div className="h-9 w-9 rounded-full bg-primary/30 flex items-center justify-center shadow-md flex-shrink-0">
+            <span className="text-primary font-semibold text-lg">U</span>
           </div>
           {isOpen && (
-            <div>
-              <p className="text-sm font-semibold text-white">Usuario</p>
+            <div className="hidden sm:block">
+              <p className="text-base font-semibold text-white">Usuario</p>
               <p className="text-xs text-white/60">usuario@ejemplo.com</p>
             </div>
           )}

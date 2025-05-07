@@ -3,9 +3,8 @@ import type { Metadata } from 'next';
 import { ChatBubble } from '@/components/chat/chat-bubble';
 import { GalaxyBackground } from '@/components/background/galaxy-background';
 import { Inter } from 'next/font/google';
-import { Sidebar } from "@/components/layout/sidebar";
 import { SidebarProvider } from "@/components/layout/sidebar-context";
-import { Header } from "@/components/layout/header";
+import ClientMainLayout from "@/components/layout/client-main-layout";
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -26,15 +25,7 @@ export default function RootLayout({
           <div className="fixed inset-0 w-full h-full overflow-hidden z-0">
             <GalaxyBackground />
           </div>
-          <div className="relative z-10 flex min-h-screen">
-            <Sidebar />
-            <div className="flex-1 flex flex-col overflow-hidden">
-              <Header />
-              <main className="flex-1 overflow-y-auto transition-all duration-300 md:ml-0">
-                {children}
-              </main>
-            </div>
-          </div>
+          <ClientMainLayout>{children}</ClientMainLayout>
           <ChatBubble />
         </SidebarProvider>
       </body>
