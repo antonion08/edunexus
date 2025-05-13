@@ -19,6 +19,7 @@ import { Input } from "@/components/ui/input";
 import { MessageCircle, Send, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import io from "socket.io-client";
+import React from "react";
 
 const socket = io("http://localhost:3000");
 
@@ -241,3 +242,5 @@ export function ChatBubble() {
     </div>
   );
 }
+
+export default ChatBubble;
