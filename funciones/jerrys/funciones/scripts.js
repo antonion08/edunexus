@@ -85,13 +85,12 @@ for (const line of lines) {
             console.log("Respuesta completa:", reply);
             // Aquí podrías realizar acciones al finalizar
         }
-        console.log("Fragmento recibido:", data.response); // Para depuración
+        console.log("Fragmento recibido:"); // Para depuración
     } catch (error) {
         console.warn('Error al parsear JSON:', line, error);
     }
 }
             $container.scrollTop = $container.scrollHeight;
-            console.log(lines);
         }
         $button.removeAttribute('disabled');
         $small.textContent = '';
