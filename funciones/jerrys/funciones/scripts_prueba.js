@@ -51,14 +51,14 @@ $form.addEventListener('submit', async (event) => {
             return;
         }
 
-        let reply = "";
+        let reply = ''; // Inicializa 'reply' aquí, al comienzo de la nueva respuesta
         const botTextElement = addmensage('', 'ollama');
 
         const reader = response.body.getReader();
         const decoder = new TextDecoder();
         let partialResponse = '';
 
-        while (true) {
+while (true) {
             const { done, value } = await reader.read();
             if (done) {
                 break;
@@ -67,29 +67,27 @@ $form.addEventListener('submit', async (event) => {
             // Procesar las líneas JSON del stream de Ollama
             const lines = partialResponse.split('\n').filter(line => line.trim() !== '');
 
-let reply = ""; // Inicializa la variable para la respuesta completa fuera del bucle
+            for (const line of lines) {
+                if (typeof line !== 'string' || !line.startsWith('{')) {
+                    console.warn('Línea inválida, omitiendo:', line);
+                    continue;
+                }
 
-for (const line of lines) {
-    if (typeof line !== 'string' || !line.startsWith('{')) {
-        console.warn('Línea inválida, omitiendo:', line);
-        continue;
-    }
-
-    try {
-        const data = JSON.parse(line);
-        if (data.response) {
-            reply += data.response; // Acumula el nuevo fragmento a la respuesta
-            botTextElement.textContent = reply; // Muestra la respuesta acumulada
-        }
-        if (data.done) {
-            console.log("Respuesta completa:", reply);
-            // Aquí podrías realizar acciones al finalizar
-        }
-        console.log("Fragmento recibido:", data.response); // Para depuración
-    } catch (error) {
-        console.warn('Error al parsear JSON:', line, error);
-    }
-}
+                try {
+                    const data = JSON.parse(line);
+                    if (data.response) {
+                        reply += data.response;
+                        botTextElement.textContent = reply;
+                    }
+                    if (data.done) {
+                        console.log("Respuesta completa:", reply);
+                        // Aquí podrías realizar acciones al finalizar
+                    }
+                    console.log("Fragmento recibido:", data.response); // Para depuración
+                } catch (error) {
+                    console.warn('Error al parsear JSON:', line, error);
+                }
+            }
             $container.scrollTop = $container.scrollHeight;
             console.log(lines);
         }
