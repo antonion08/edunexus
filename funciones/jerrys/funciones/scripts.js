@@ -7,6 +7,7 @@ const $container = $('main');
 const $button = $('button');
 const $small = $('small');
 let messages = [];
+//var reply = [];
 
 const OLLAMA_API_URL = 'http://localhost:11434/api/generate'; // URL de la API de Ollama
 const OLLAMA_MODEL = 'llama3.2'; // Reemplaza con el modelo que estés usando en Ollama
@@ -51,7 +52,7 @@ $form.addEventListener('submit', async (event) => {
             return;
         }
 
-        let reply = "";
+        //let reply = "";
         const botTextElement = addmensage('', 'ollama');
 
         const reader = response.body.getReader();
@@ -67,7 +68,7 @@ $form.addEventListener('submit', async (event) => {
             // Procesar las líneas JSON del stream de Ollama
             const lines = partialResponse.split('\n').filter(line => line.trim() !== '');
 
-let reply = ""; // Inicializa la variable para la respuesta completa fuera del bucle
+var reply = ""; // Inicializa la variable para la respuesta completa fuera del bucle
 
 for (const line of lines) {
     if (typeof line !== 'string' || !line.startsWith('{')) {
@@ -78,7 +79,7 @@ for (const line of lines) {
     try {
         const data = JSON.parse(line);
         if (data.response) {
-            reply += data.response; // Acumula el nuevo fragmento a la respuesta
+            reply += ""+ data.response; // Acumula el nuevo fragmento a la respuesta
             botTextElement.textContent = reply; // Muestra la respuesta acumulada
         }
         if (data.done) {
