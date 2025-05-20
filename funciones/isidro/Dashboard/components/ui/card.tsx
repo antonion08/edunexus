@@ -9,7 +9,7 @@ const Card = React.forwardRef<
   <div
     ref={ref}
     className={cn(
-      'rounded-xl bg-black/40 backdrop-blur-lg border border-white/20 shadow-lg transition-all duration-300 focus-within:ring-2 focus-within:ring-primary/60',
+      'rounded-xl bg-black/100 backdrop-blur-lg border border-white/20 shadow-lg transition-all duration-300 focus-within:ring-2 focus-within:ring-primary/60',
       className
     )}
     tabIndex={0}

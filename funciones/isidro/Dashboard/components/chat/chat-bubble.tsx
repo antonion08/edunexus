@@ -19,6 +19,8 @@ import { Input } from "@/components/ui/input";
 import { MessageCircle, Send, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import io from "socket.io-client";
+import React from "react";
+import { cn } from "@/lib/utils";
 
 const socket = io("http://localhost:3000");
 
@@ -64,24 +66,107 @@ export function ChatBubble() {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  const handleSubmit = (e: FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     if (!inputMessage.trim()) return;
-    // Enviar mensaje al servidor
+
+    const userMessageText = inputMessage;
+    // Enviar mensaje del usuario al servidor Socket.io (si aplica)
     socket.emit("chat message", {
-      text: inputMessage,
+      text: userMessageText,
       timestamp: new Date().toISOString()
     });
+
+    // Añadir mensaje del usuario a la vista
     setMessages((prev) => [
       ...prev,
       {
         id: Date.now().toString() + Math.random(),
-        text: inputMessage,
+        text: userMessageText,
         isUser: true,
         timestamp: new Date()
       }
     ]);
     setInputMessage("");
+
+    // --- Integración con la IA ---
+    const OLLAMA_API_URL = "http://localhost:11434/api/generate"; // URL directa a Ollama
+    const OLLAMA_MODEL = "llama3.2"; // Modelo especificado en scripts.js
+
+    try {
+      // Añadir un mensaje vacío inicial para la respuesta de la IA
+       const aiMessageId = Date.now().toString() + Math.random();
+       setMessages(prev => [...prev, { id: aiMessageId, text: "", isUser: false, timestamp: new Date() }]);
+
+      const response = await fetch(OLLAMA_API_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          prompt: userMessageText,
+          model: OLLAMA_MODEL,
+          stream: true
+        })
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        console.error('Error al comunicarse con la IA:', error);
+        // Actualizar el mensaje de la IA con el error
+        setMessages(prev => prev.map(msg => msg.id === aiMessageId ? { ...msg, text: `Error de la IA: ${error?.error || response.statusText}` } : msg));
+        return;
+      }
+
+      const reader = response.body?.getReader();
+      const decoder = new TextDecoder();
+      let partialResponse = '';
+      let aiReply = '';
+
+      while (true) {
+        const { done, value } = await reader!.read();
+        if (done) {
+          break;
+        }
+        partialResponse += decoder.decode(value, { stream: true });
+
+        // Procesar las líneas JSON del stream
+        const lines = partialResponse.split('\n');
+        partialResponse = lines.pop() || ''; // Guarda la última línea incompleta
+
+        for (const line of lines) {
+          if (line.trim() === '') continue;
+          try {
+            const data = JSON.parse(line);
+            if (data.response) {
+              aiReply += data.response;
+              // Actualizar el último mensaje de la IA en el estado
+              setMessages(prev => prev.map(msg => msg.id === aiMessageId ? { ...msg, text: aiReply } : msg));
+            }
+          } catch (error) {
+            console.warn('Error al parsear JSON de la IA:', line, error);
+          }
+        }
+         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" }); // Desplazar mientras llega la respuesta
+      }
+       messagesEndRef.current?.scrollIntoView({ behavior: "smooth" }); // Desplazamiento final
+
+    } catch (error) {
+      console.error('Error en la comunicación con la IA:', error);
+      // Añadir un mensaje de error al chat
+      setMessages(prev => [
+          ...prev,
+          {
+              id: Date.now().toString() + Math.random(),
+              text: 'Error al obtener la respuesta de la IA.',
+              isUser: false,
+              timestamp: new Date()
+          }
+      ]);
+       messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    }
+    // --- Fin Integración con la IA ---
+
   };
 
   return (
@@ -98,11 +183,9 @@ export function ChatBubble() {
               damping: 30,
               mass: 1
             }}
-            className="fixed bottom-20 right-4 w-[calc(100%-2rem)] sm:w-96 z-[9999] overflow-hidden p-[2px] rounded-2xl bg-gradient-to-br from-black/60 via-black/30 to-black/60"
+            className="fixed bottom-20 right-4 w-[calc(100%-2rem)] sm:w-96 z-[9999] overflow-hidden p-4 rounded-2xl bg-black/80 backdrop-blur-xl border border-white/10 shadow-2xl"
             style={{
               boxShadow: "0 8px 32px rgba(0, 0, 0, 0.2)",
-              backdropFilter: "blur(12px)",
-              WebkitBackdropFilter: "blur(12px)",
               position: "fixed",
               bottom: "5rem",
               right: "1rem"
@@ -110,9 +193,9 @@ export function ChatBubble() {
             role="dialog"
             aria-label="Chat del asistente virtual"
           >
-            <div className="rounded-2xl bg-gradient-to-br from-black/60 via-primary/30 to-black/60 backdrop-blur-xl border border-white/10 h-[500px] flex flex-col">
+            <div className="h-[500px] flex flex-col">
               <Card className="border-0 bg-transparent h-full flex flex-col">
-                <CardHeader className="bg-gradient-to-r from-primary to-primary/80 p-4 rounded-t-2xl flex-shrink-0">
+                <CardHeader className="p-4 rounded-t-2xl flex-shrink-0">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       <motion.div
@@ -241,3 +324,5 @@ export function ChatBubble() {
     </div>
   );
 }
+
+export default ChatBubble;
