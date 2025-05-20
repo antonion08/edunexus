@@ -1,13 +1,19 @@
 /**
- * ChatBubble - Componente de chat flotante.
- *
- * Permite enviar y recibir mensajes en tiempo real usando Socket.io.
- * - Fondo y borde con gradiente translúcido.
- * - Burbujas de mensaje opacas solo cuando hay mensajes.
- * - Animaciones con Framer Motion.
- * - Accesible y responsivo.
- *
+ * ChatBubble - Componente de chat flotante interactivo
+ * 
+ * Este componente implementa un chat flotante con las siguientes características:
+ * - Interfaz de chat en tiempo real usando Socket.io
+ * - Integración con IA usando Ollama
+ * - Animaciones suaves usando Framer Motion
+ * - Diseño responsivo y accesible
+ * - Posicionamiento fijo en la esquina inferior derecha
+ * - Efectos visuales modernos (backdrop blur, gradientes, sombras)
+ * 
  * @component
+ * @example
+ * ```tsx
+ * <ChatBubble />
+ * ```
  */
 
 "use client";
@@ -22,29 +28,42 @@ import io from "socket.io-client";
 import React from "react";
 import { cn } from "@/lib/utils";
 
+// Configuración del socket para comunicación en tiempo real
 const socket = io("http://localhost:3000");
 
+/**
+ * Interfaz que define la estructura de un mensaje
+ * @interface Message
+ */
 interface Message {
-  id: string;
-  text: string;
-  isUser: boolean;
-  timestamp: Date;
+  id: string;        // Identificador único del mensaje
+  text: string;      // Contenido del mensaje
+  isUser: boolean;   // Indica si el mensaje es del usuario
+  timestamp: Date;   // Fecha y hora del mensaje
 }
 
 /**
  * ChatBubble Component
  * 
- * @returns {JSX.Element} Un componente de chat flotante con animaciones
+ * Componente principal que renderiza un chat flotante con las siguientes funcionalidades:
+ * - Botón flotante con animación
+ * - Ventana de chat expandible
+ * - Lista de mensajes con scroll automático
+ * - Formulario para enviar mensajes
+ * - Integración con Socket.io para mensajes en tiempo real
+ * - Integración con Ollama para respuestas de IA
+ * 
+ * @returns {JSX.Element} Componente de chat flotante
  */
 export function ChatBubble() {
-  // Estado para controlar la visibilidad del chat
-  const [isOpen, setIsOpen] = useState(false);
-  const [messages, setMessages] = useState<Message[]>([]);
-  const [inputMessage, setInputMessage] = useState("");
-  const messagesEndRef = useRef<HTMLDivElement>(null);
+  // Estados del componente
+  const [isOpen, setIsOpen] = useState(false);           // Controla la visibilidad del chat
+  const [messages, setMessages] = useState<Message[]>([]); // Almacena los mensajes
+  const [inputMessage, setInputMessage] = useState("");   // Controla el input del mensaje
+  const messagesEndRef = useRef<HTMLDivElement>(null);    // Referencia para scroll automático
 
+  // Efecto para manejar mensajes del socket
   useEffect(() => {
-    // Recibir mensajes del servidor
     socket.on("chat message", (msg: { text: string; timestamp: string }) => {
       setMessages((prev) => [
         ...prev,
@@ -61,23 +80,27 @@ export function ChatBubble() {
     };
   }, []);
 
-  // Scroll automático al último mensaje
+  // Efecto para scroll automático al último mensaje
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
+  /**
+   * Maneja el envío de mensajes
+   * @param {FormEvent} e - Evento del formulario
+   */
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     if (!inputMessage.trim()) return;
 
     const userMessageText = inputMessage;
-    // Enviar mensaje del usuario al servidor Socket.io (si aplica)
+    // Envía mensaje al servidor Socket.io
     socket.emit("chat message", {
       text: userMessageText,
       timestamp: new Date().toISOString()
     });
 
-    // Añadir mensaje del usuario a la vista
+    // Añade mensaje del usuario a la vista
     setMessages((prev) => [
       ...prev,
       {
@@ -89,14 +112,13 @@ export function ChatBubble() {
     ]);
     setInputMessage("");
 
-    // --- Integración con la IA ---
-    const OLLAMA_API_URL = "http://localhost:11434/api/generate"; // URL directa a Ollama
-    const OLLAMA_MODEL = "llama3.2"; // Modelo especificado en scripts.js
+    // Integración con Ollama para respuestas de IA
+    const OLLAMA_API_URL = "http://localhost:11434/api/generate";
+    const OLLAMA_MODEL = "llama3.2";
 
     try {
-      // Añadir un mensaje vacío inicial para la respuesta de la IA
-       const aiMessageId = Date.now().toString() + Math.random();
-       setMessages(prev => [...prev, { id: aiMessageId, text: "", isUser: false, timestamp: new Date() }]);
+      const aiMessageId = Date.now().toString() + Math.random();
+      setMessages(prev => [...prev, { id: aiMessageId, text: "", isUser: false, timestamp: new Date() }]);
 
       const response = await fetch(OLLAMA_API_URL, {
         method: 'POST',
@@ -113,11 +135,15 @@ export function ChatBubble() {
       if (!response.ok) {
         const error = await response.json();
         console.error('Error al comunicarse con la IA:', error);
-        // Actualizar el mensaje de la IA con el error
-        setMessages(prev => prev.map(msg => msg.id === aiMessageId ? { ...msg, text: `Error de la IA: ${error?.error || response.statusText}` } : msg));
+        setMessages(prev => prev.map(msg => 
+          msg.id === aiMessageId 
+            ? { ...msg, text: `Error de la IA: ${error?.error || response.statusText}` } 
+            : msg
+        ));
         return;
       }
 
+      // Procesa la respuesta stream de la IA
       const reader = response.body?.getReader();
       const decoder = new TextDecoder();
       let partialResponse = '';
@@ -125,14 +151,11 @@ export function ChatBubble() {
 
       while (true) {
         const { done, value } = await reader!.read();
-        if (done) {
-          break;
-        }
+        if (done) break;
+        
         partialResponse += decoder.decode(value, { stream: true });
-
-        // Procesar las líneas JSON del stream
         const lines = partialResponse.split('\n');
-        partialResponse = lines.pop() || ''; // Guarda la última línea incompleta
+        partialResponse = lines.pop() || '';
 
         for (const line of lines) {
           if (line.trim() === '') continue;
@@ -140,37 +163,37 @@ export function ChatBubble() {
             const data = JSON.parse(line);
             if (data.response) {
               aiReply += data.response;
-              // Actualizar el último mensaje de la IA en el estado
-              setMessages(prev => prev.map(msg => msg.id === aiMessageId ? { ...msg, text: aiReply } : msg));
+              setMessages(prev => prev.map(msg => 
+                msg.id === aiMessageId 
+                  ? { ...msg, text: aiReply } 
+                  : msg
+              ));
             }
           } catch (error) {
             console.warn('Error al parsear JSON de la IA:', line, error);
           }
         }
-         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" }); // Desplazar mientras llega la respuesta
+        messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
       }
-       messagesEndRef.current?.scrollIntoView({ behavior: "smooth" }); // Desplazamiento final
+      messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
 
     } catch (error) {
       console.error('Error en la comunicación con la IA:', error);
-      // Añadir un mensaje de error al chat
       setMessages(prev => [
-          ...prev,
-          {
-              id: Date.now().toString() + Math.random(),
-              text: 'Error al obtener la respuesta de la IA.',
-              isUser: false,
-              timestamp: new Date()
-          }
+        ...prev,
+        {
+          id: Date.now().toString() + Math.random(),
+          text: 'Error al obtener la respuesta de la IA.',
+          isUser: false,
+          timestamp: new Date()
+        }
       ]);
-       messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+      messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
     }
-    // --- Fin Integración con la IA ---
-
   };
 
   return (
-    <div className="fixed bottom-4 right-4 z-[9999]">
+    <div className="absolute bottom-24 right-4 w-[calc(100%-2rem)] sm:w-96 z-[9999]">
       <AnimatePresence>
         {isOpen && (
           <motion.div
@@ -183,12 +206,9 @@ export function ChatBubble() {
               damping: 30,
               mass: 1
             }}
-            className="fixed bottom-20 right-4 w-[calc(100%-2rem)] sm:w-96 z-[9999] overflow-hidden p-4 rounded-2xl bg-black/80 backdrop-blur-xl border border-white/10 shadow-2xl"
+            className="abosulute bottom-24 right-4 w-[calc(100%-2rem)] sm:w-96 z-[9999] overflow-hidden p-4 rounded-2xl bg-black/80 backdrop-blur-xl border border-white/10 shadow-2xl"
             style={{
-              boxShadow: "0 8px 32px rgba(0, 0, 0, 0.2)",
-              position: "fixed",
-              bottom: "5rem",
-              right: "1rem"
+              boxShadow: "0 8px 32px rgba(0, 0, 0, 0.2)"
             }}
             role="dialog"
             aria-label="Chat del asistente virtual"
@@ -236,7 +256,7 @@ export function ChatBubble() {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.5 }}
-                    className="space-y-4 flex-1 overflow-y-auto pr-2"
+                    className="space-y-4 flex-1 overflow-y-auto pr-2 max-h-[350px] scrollbar-thin scrollbar-thumb-white/20 scrollbar-track-transparent"
                   >
                     {messages.length === 0 && (
                       <div className="flex flex-col items-center justify-center h-full text-white/60 select-none">
@@ -250,13 +270,13 @@ export function ChatBubble() {
                           initial={{ opacity: 0, x: message.isUser ? 20 : -20 }}
                           animate={{ opacity: 1, x: 0 }}
                           transition={{ delay: 0.1 }}
-                          className={`p-3 rounded-2xl shadow-soft-sm max-w-[80%] ${
+                          className={`p-3 rounded-2xl shadow-soft-sm max-w-[80%] break-words ${
                             message.isUser
                               ? 'bg-primary text-white rounded-tr-none'
                               : 'bg-black/80 text-white/90 rounded-tl-none'
                           }`}
                         >
-                          <p className="text-sm">{message.text}</p>
+                          <p className="text-sm whitespace-pre-wrap">{message.text}</p>
                           <span className="text-xs opacity-50 mt-1 block">
                             {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                           </span>
@@ -300,12 +320,17 @@ export function ChatBubble() {
       <motion.div
         whileHover={{ scale: 1.1 }}
         whileTap={{ scale: 0.9 }}
-        className="fixed bottom-4 right-4 z-[9999]"
+        animate={{
+          y: [0, -10, 0],
+        }}
+        transition={{
+          duration: 2,
+          repeat: Infinity,
+          ease: "easeInOut"
+        }}
+        className="absolute bottom-4 right-4 z-[9999]"
         style={{
-          filter: "drop-shadow(0 4px 12px rgba(0, 0, 0, 0.2))",
-          position: "fixed",
-          bottom: "1rem",
-          right: "1rem"
+          filter: "drop-shadow(0 4px 12px rgba(0, 0, 0, 0.2))"
         }}
       >
         <Button
@@ -324,5 +349,3 @@ export function ChatBubble() {
     </div>
   );
 }
-
-export default ChatBubble;
