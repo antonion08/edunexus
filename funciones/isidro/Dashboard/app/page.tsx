@@ -18,11 +18,7 @@ import GlitchText from "@/components/ui/glitch-text";
 export default function Home() {
   return (
     <>
-      {/* Logo y nombre fijos en la esquina superior izquierda */}
-      <div className="fixed top-4 left-4 z-50 flex items-center gap-2 select-none pointer-events-none">
-        <BookOpen className="h-8 w-8 text-primary" />
-        <GlitchText className="text-2xl font-semibold">EDUNEXUS</GlitchText>
-      </div>
+      
       <div className="w-full max-w-6xl mx-auto">
         {/* Sección de bienvenida */}
         <div className="w-full text-center mb-8">
