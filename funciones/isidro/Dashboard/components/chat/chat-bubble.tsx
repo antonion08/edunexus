@@ -193,7 +193,7 @@ export function ChatBubble() {
   };
 
   return (
-    <div className="absolute bottom-24 right-4 w-[calc(100%-2rem)] sm:w-96 z-[9999]">
+    <div className="fixed bottom-0 right-0 z-[9999]">
       <AnimatePresence>
         {isOpen && (
           <motion.div
@@ -206,9 +206,9 @@ export function ChatBubble() {
               damping: 30,
               mass: 1
             }}
-            className="abosulute bottom-24 right-4 w-[calc(100%-2rem)] sm:w-96 z-[9999] overflow-hidden p-4 rounded-2xl bg-black/80 backdrop-blur-xl border border-white/10 shadow-2xl"
+            className="fixed bottom-24 right-4 w-[calc(100%-2rem)] sm:w-96 z-[9999] overflow-hidden p-4 rounded-2xl bg-blue/80 backdrop-blur-xl border border-white/10 shadow-3xl"
             style={{
-              boxShadow: "0 8px 32px rgba(0, 0, 0, 0.2)"
+              boxShadow: "0 8px 32px rgba(233, 0, 0, 0.2)"
             }}
             role="dialog"
             aria-label="Chat del asistente virtual"
@@ -328,7 +328,7 @@ export function ChatBubble() {
           repeat: Infinity,
           ease: "easeInOut"
         }}
-        className="absolute bottom-4 right-4 z-[9999]"
+        className="fixed bottom-4 right-4 z-[9999]"
         style={{
           filter: "drop-shadow(0 4px 12px rgba(0, 0, 0, 0.2))"
         }}
