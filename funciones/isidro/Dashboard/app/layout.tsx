@@ -4,6 +4,7 @@ import { ChatBubble } from '@/components/chat/chat-bubble';
 import { Inter } from 'next/font/google';
 import { Navbar } from "@/components/layout/navbar";
 import { GalaxyBackground } from "@/components/background/galaxy-background";
+import { ThemeProvider } from "@/components/theme-provider";
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -20,14 +21,16 @@ export default function RootLayout({
   return (
     <html lang="es" suppressHydrationWarning className="dark">
       <body className={`${inter.className} bg-black/90 backdrop-blur-md`}>
-        <div className="fixed inset-0 w-full h-full overflow-hidden z-0">
-          <GalaxyBackground />
-        </div>
-        <Navbar />
-        <main className="pt-16">
-          {children}
-        </main>
-        <ChatBubble />
+        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+          <div className="fixed inset-0 w-full h-full overflow-hidden z-0">
+            <GalaxyBackground />
+          </div>
+          <Navbar />
+          <main className="pt-16">
+            {children}
+          </main>
+          <ChatBubble />
+        </ThemeProvider>
       </body>
     </html>
   );

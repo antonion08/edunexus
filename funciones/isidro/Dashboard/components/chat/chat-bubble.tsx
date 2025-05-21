@@ -282,7 +282,8 @@ export function ChatBubble() {
                           </span>
                         </motion.div>
                       </div>
-                    ))}
+                    ))
+                    }
                     <div ref={messagesEndRef} />
                   </motion.div>
                   <motion.div

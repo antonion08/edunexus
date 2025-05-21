@@ -14,6 +14,7 @@ import {
   X,
 } from "lucide-react";
 import GlitchText from "@/components/ui/glitch-text";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 // Dropdown de perfil elegante
 const ProfileDropDown = (props: { className?: string }) => {
@@ -112,7 +113,8 @@ export function Navbar() {
           </ul>
         </div>
         {/* Perfil y menú hamburguesa */}
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-none">
+          <ThemeToggle />
           <ProfileDropDown className="hidden lg:block" />
           <button
             className="outline-none text-white/70 block lg:hidden p-2 rounded-full hover:bg-white/10 transition"
