@@ -74,16 +74,13 @@ export function ChatBubble() {
           timestamp: new Date(msg.timestamp)
         }
       ]);
+      // Scroll to the bottom when a new message arrives from the socket
+      messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
     });
     return () => {
       socket.off("chat message");
     };
   }, []);
-
-  // Efecto para scroll automático al último mensaje
-  useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages]);
 
   /**
    * Maneja el envío de mensajes
@@ -173,10 +170,7 @@ export function ChatBubble() {
             console.warn('Error al parsear JSON de la IA:', line, error);
           }
         }
-        messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
       }
-      messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-
     } catch (error) {
       console.error('Error en la comunicación con la IA:', error);
       setMessages(prev => [
@@ -193,7 +187,7 @@ export function ChatBubble() {
   };
 
   return (
-    <div className="fixed bottom-0 right-0 z-[9999]">
+    <div className="sticky bottom-6 right-6 z-[9999] ml-auto w-fit">
       <AnimatePresence>
         {isOpen && (
           <motion.div
@@ -206,7 +200,7 @@ export function ChatBubble() {
               damping: 30,
               mass: 1
             }}
-            className="fixed bottom-24 right-4 w-[calc(100%-2rem)] sm:w-96 z-[9999] overflow-hidden p-4 rounded-2xl bg-blue/80 backdrop-blur-xl border border-white/10 shadow-3xl"
+            className="absolute bottom-16 right-0 w-[calc(100%-2rem)] sm:w-96 z-[9999] overflow-hidden p-4 rounded-2xl bg-black/20 backdrop-blur-xl border border-white/10 shadow-3xl"
             style={{
               boxShadow: "0 8px 32px rgba(233, 0, 0, 0.2)"
             }}
@@ -329,7 +323,7 @@ export function ChatBubble() {
           repeat: Infinity,
           ease: "easeInOut"
         }}
-        className="fixed bottom-4 right-4 z-[9999]"
+        className="sticky bottom-4 right-4 z-[9999] ml-auto"
         style={{
           filter: "drop-shadow(0 4px 12px rgba(0, 0, 0, 0.2))"
         }}
